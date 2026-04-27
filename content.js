@@ -1,6 +1,20 @@
 const REPLACEMENTS = [
-  // Longer phrase first to avoid partial replacement
+  // 1. Longest phrase first to avoid partial replacement
   [/\bArtificial Intelligence\b/gi, "large language models"],
+
+  // 2. "AI is" → "LLMs are" (verb changes form; preserve capitalisation of verb)
+  [/\bAI (is)\b/gi, (_, verb) => `LLMs ${verb[0] === verb[0].toUpperCase() ? "Are" : "are"}`],
+
+  // 3. "AI can/will" → "LLMs can/will" (verb form unchanged)
+  [/\bAI (can|will)\b/gi, (_, verb) => `LLMs ${verb}`],
+
+  // 4. Adjectival "AI" before a hyphen: "AI-powered" → "LLM-powered"
+  [/\bAI(?=-)/g, "LLM"],
+
+  // 5. Adjectival "AI" before a noun (any case), excluding verb words handled above
+  [/\bAI\b(?=\s+(?!is\b|are\b|can\b|will\b|was\b)[a-zA-Z])/gi, "LLM"],
+
+  // 6. All remaining standalone "AI" → "LLMs"
   [/\bAI\b/g, "LLMs"],
 ];
 
